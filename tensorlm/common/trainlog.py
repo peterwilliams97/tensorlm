@@ -29,7 +29,7 @@ import numpy as np
 from dateutil import parser
 from time import time
 
-from tensorlm.common.log import get_logger
+from common.log import get_logger
 
 LOGGER = get_logger(__name__)
 

@@ -30,7 +30,7 @@ import json
 
 import tensorflow as tf
 
-from tensorlm.wrappers import BaseLM
+from wrappers import BaseLM
 
 # Model parameters
 tf.app.flags.DEFINE_string("level", "char", "Level of tokenization. Either 'char' or 'word'.")
@@ -95,6 +95,16 @@ def _sample_interactive(tf_session, model, num_steps):
 
 
 def main(_):
+    from pprint import pprint
+    pprint(FLAGS.__dict__)
+    os.stdout.flush()
+    assert FLAGS.train_text_path
+
+    if FLAGS.train_text_path:
+        assert os.path.exists(FLAGS.train_text_path), FLAGS.train_text_path
+    if FLAGS.evaluate_text_path:
+        assert os.path.exists(FLAGS.evaluate_text_path), FLAGS.evaluate_text_path
+
     """Main function parsing the arguments and doing training, evaluation or sampling"""
     with tf.Session() as session:
         # Create the model

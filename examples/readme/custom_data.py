@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-from tensorlm import GeneratingLSTM
+from ..tensorlm import GeneratingLSTM
 
 with tf.Session() as session:
     # We use integer ids from 0 to 19, so the vocab size is 20. The range of ids must always start

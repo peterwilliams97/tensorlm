@@ -1,0 +1,7 @@
+python cli.py  --train --save_dir=save  --max_epochs=1000 --num_timesteps=30 --train_text_path=../datasets/holmes/train.txt    --evaluate_text_path=../datasets/holmes/test.txt --max_vocab_size=999000  &> blah
+
+python cli.py  --train --save_dir=save  --max_epochs=1000 --num_timesteps=30 --train_text_path=../datasets/holmes/train.txt    --evaluate_text_path=../datasets/holmes/test.txt --max_vocab_size=1000  &> blah002
+
+python cli.py  --train --save_dir=save003  --max_epochs=1000 --num_timesteps=30 --batch_size=200 --train_text_path=../datasets/holmes/train.txt --evaluate_text_path=../datasets/holmes/test.txt --max_vocab_size=100  &> blah003
+
+python cli.py  --train --save_dir=save004  --max_epochs=1000 --num_timesteps=100 --batch_size=200 --evaluate --train_text_path=../datasets/holmes/train.txt --evaluate_text_path=../datasets/holmes/test.txt --max_vocab_size=100  &> blah004

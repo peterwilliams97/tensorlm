@@ -25,11 +25,12 @@ from time import time
 
 import tensorflow as tf
 
-from tensorlm.common.log import get_logger
-from tensorlm.common.util import restore_possible
-from tensorlm.common.trainlog import TrainState
-from tensorlm.dataset import Vocabulary, Dataset
-from tensorlm.model import GeneratingLSTM
+from common.log import get_logger
+from common.util import restore_possible
+from common.trainlog import TrainState
+from common.lstm_util import get_num_params
+from dataset import Vocabulary, Dataset
+from model import GeneratingLSTM
 
 LOGGER = get_logger(__name__)
 
@@ -65,6 +66,7 @@ class BaseLM:
         self._batch_size = batch_size
         self.num_timesteps = num_timesteps
         self.save_dir = save_dir
+        self.saved = False
 
         if self.save_dir and not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
@@ -73,6 +75,12 @@ class BaseLM:
         self.vocab = Vocabulary.load_or_create(save_dir, train_text_path, max_vocab_size, level)
         if self.save_dir:
             self.vocab.save_to_dir(save_dir)
+
+        num_params = get_num_params(self.vocab.get_size(), num_layers, neurons_per_layer)
+        print('vocab_size=%d' % self.vocab.get_size())
+        print('num_layers=%d' % num_layers)
+        print('neurons_per_layer=%d' % neurons_per_layer)
+        print('num_params=%d' % num_params)
 
         # Reload or Create a new TF model
         self.tf_model = GeneratingLSTM(vocab_size=self.vocab.get_size(),
@@ -123,7 +131,7 @@ class BaseLM:
         train_set = Dataset(text_path, self.vocab, self._batch_size, self.num_timesteps)
 
         while (train_state.epoch <= max_epochs and
-                   (not max_steps or train_state.global_step <= max_steps)):
+                (not max_steps or train_state.global_step <= max_steps)):
 
             batch = train_set.get_batch(train_state.step_in_epoch)
 
@@ -151,13 +159,15 @@ class BaseLM:
 
             # Save the model and train state
             if (self.save_dir and save_interval_hours and
-                            time() - last_save_time > save_interval_hours * 3600):
+                    (not self.saved or
+                     time() - last_save_time > save_interval_hours * 3600)):
                 last_save_time = time()
                 # Save the model
                 save_path = os.path.join(self.save_dir, MODEL_FILE_PREFIX)
                 self.tf_model.saver.save(tf_session, save_path)
                 # Save the train state
                 train_state.save_to_dir(self.save_dir)
+                self.saved = True
 
     def evaluate(self, tf_session, text_path):
         """Evaluate the model's performance on a given text path.

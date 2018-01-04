@@ -27,8 +27,8 @@ from collections import Counter
 import math
 from nltk.tokenize import RegexpTokenizer
 
-from tensorlm.common.log import get_logger
-from tensorlm.common.util import get_chunks
+from common.log import get_logger
+from common.util import get_chunks
 
 LOGGER = get_logger(__name__)
 
@@ -97,7 +97,7 @@ class Dataset:
 
         self._text_iter = TextIterator(self._path, self._vocab.level, bytes_in_memory)
         self._next_batch_index_to_load = 0
-        self._index_to_batch = {} # Batches currently loaded into memory
+        self._index_to_batch = {}  # Batches currently loaded into memory
 
     def get_batch(self, batch_index):
         """Return a new batch for the given index.
@@ -175,8 +175,8 @@ class Dataset:
             # num_batches * num_timesteps tokens
             rows_inputs = []
             rows_targets = []
-            while (token_index < len(tokens) - 1
-                   and len(rows_inputs) < num_batches * self._num_timesteps):
+            while (token_index < len(tokens) - 1 and
+                   len(rows_inputs) < num_batches * self._num_timesteps):
                 rows_inputs.append(tokens[token_index])
                 rows_targets.append(tokens[token_index + 1])
                 token_index += 1
@@ -380,6 +380,8 @@ class Vocabulary:
         for token, _ in token_counter.most_common(max_vocab_size - len(token_to_id)):
             token_to_id[token] = len(token_to_id)
 
+        print('token_to_id(vocab_size)=%d' % len(token_to_id))
+
         return Vocabulary(token_to_id, level)
 
 
@@ -398,8 +400,10 @@ class TextIterator:
         self.level = level
         self.current_byte = 0
         self.bytes_per_step = bytes_in_memory
+        assert self.path
 
     def __iter__(self):
+        assert self.path
         return self
 
     def __next__(self):
@@ -408,6 +412,7 @@ class TextIterator:
         Returns:
             list[str]: The tokens loaded.
         """
+        assert self.path
 
         # This will break words at the end. At char-level this is no problem. At word level
         # this introduces a little incorrectness. But with 1MB steps, it shouldn't be a problem.

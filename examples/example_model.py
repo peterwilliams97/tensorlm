@@ -2,7 +2,7 @@
 
 import tensorflow as tf
 
-from tensorlm import Vocabulary, Dataset, GeneratingLSTM
+from ..tensorlm import Vocabulary, Dataset, GeneratingLSTM
 
 TEXT_PATH = "datasets/sherlock/tinytrain.txt"
 DEV_PATH = "datasets/sherlock/tinyvalid.txt"

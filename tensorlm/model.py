@@ -23,9 +23,9 @@
 import numpy as np
 import tensorflow as tf
 
-from tensorlm.common.lstm_util import get_state_variables_for_batch, \
-    get_state_update_op, get_state_variables, get_state_reset_op
-from tensorlm.dataset import tokenize, PAD_TOKEN, PAD_ID
+from common.lstm_util import (get_state_variables_for_batch,
+    get_state_update_op, get_state_variables, get_state_reset_op)
+from dataset import tokenize, PAD_ID
 
 # We distinguish between the learned model variables and the variables that store the current state
 MODEL_SCOPE_NAME = "model"
@@ -283,7 +283,7 @@ class GeneratingLSTM:
         """Builds the whole computational graph for the LSTM.
 
         Args:
-            forward_only (bool): If True, the graph will also contain back-propagation operations
+            forward_only (bool): If False, the graph will also contain back-propagation operations
                 for improving the model's trainable parameters.
         """
 
