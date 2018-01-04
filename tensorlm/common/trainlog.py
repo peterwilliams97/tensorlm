@@ -164,8 +164,12 @@ class TrainState:
     @staticmethod
     def load_from_dir(out_dir):
         out_path = os.path.join(out_dir, TrainState.trainstate_file_name)
-        with open(out_path) as f:
-            json_dict = json.load(f, object_hook=json_decode)
+        try:
+            with open(out_path) as f:
+                json_dict = json.load(f, object_hook=json_decode)
+        except json.decoder.JSONDecodeError:
+            print('out_path="%s"' % out_path)
+            raise
         return TrainState.from_json(json_dict)
 
 
@@ -180,10 +184,17 @@ def json_encode(obj):
     # Convert numpy types:
     if type(obj) in [np.int8, np.int16, np.int32, np.int64]:
         return int(obj)
-    elif type(obj) in [np.float16, np.float32, np.float64, np.float128]:
+    elif isinstance(obj, (np.float16, np.float32, np.float64)):
         return float(obj)
     elif isinstance(obj, np.ndarray):
         return obj.tolist()
+
+    try:
+        # np.float128 doesn't exist on all platforms
+        if isinstance(obj, np.float128):
+            return float(obj)
+    except AttributeError:
+        pass
 
     if isinstance(obj, datetime.datetime):
         return obj.isoformat()

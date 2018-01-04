@@ -27,6 +27,7 @@ from it.
 import sys
 import os
 import json
+from sys import stdout
 
 import tensorflow as tf
 
@@ -97,7 +98,7 @@ def _sample_interactive(tf_session, model, num_steps):
 def main(_):
     from pprint import pprint
     pprint(FLAGS.__dict__)
-    os.stdout.flush()
+    stdout.flush()
     assert FLAGS.train_text_path
 
     if FLAGS.train_text_path:
